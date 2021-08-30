@@ -10,8 +10,7 @@ export class PostService {
 
   constructor(
     @InjectRepository(PostEntity) private postsRepository: Repository<PostEntity>,
-  ) {
-  }
+  ) {}
 
   async create(createPost: CreatePostDto): Promise<PostEntity> {
     const post = await this.postsRepository.create(createPost);
@@ -20,6 +19,14 @@ export class PostService {
 
   async findAll(): Promise<PostEntity[]> {
     return this.postsRepository.find();
+  }
+
+  async findAllByDate(): Promise<PostEntity[]> {
+    const entries = this.postsRepository
+      .createQueryBuilder()
+      .addOrderBy('created_at', "ASC").getMany();
+
+    return entries;
   }
 
   async findOne(id: string): Promise<PostEntity> {

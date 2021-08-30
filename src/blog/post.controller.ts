@@ -17,6 +17,11 @@ export class PostController {
     return await this.postsService.findAll();
   }
 
+  @Get('date')
+  async findAllByDate() {
+    return await this.postsService.findAllByDate();
+  }
+
   @Get(':id')
   async findOne(@Param('id') id: string) {
     return await this.postsService.findOne(id);

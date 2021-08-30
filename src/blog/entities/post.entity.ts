@@ -1,5 +1,6 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { PostCommentEntity } from "./post-comment.entity";
+
 
 @Entity('post')
 export class PostEntity {
@@ -18,8 +19,14 @@ export class PostEntity {
   @Column({name: 'content', type:'text'})
   content: string;
 
-  @Column({name: 'status', type:'boolean', default:true})
-  isActive: boolean;
+  @Column({name:'number_of_likes', nullable: true})
+  numberOfLikes: number;
+
+  @CreateDateColumn({name: 'created_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
+  createdAt: Date;
+
+  @UpdateDateColumn({name: 'updated_at', type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
+  updatedAt: Date;
 
   @OneToMany(type => PostCommentEntity, comment => comment.post)
   comments: PostCommentEntity;
