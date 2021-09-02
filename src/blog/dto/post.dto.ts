@@ -1,8 +1,10 @@
+import { PostCommentEntity } from "../entities/post-comment.entity";
+
 export class CreatePostDto {
   title: string;
   subTitle: string;
-  imageUrl: string;
   content: string;
+  comments: PostCommentEntity[];
 }
 export class UpdatePostDto {
   title: string;

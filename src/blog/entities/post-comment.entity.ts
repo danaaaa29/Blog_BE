@@ -7,11 +7,11 @@ export class PostCommentEntity {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({name: 'comment_count'})
-  commentCount: number;
-
-  @Column({name: 'comment_author'})
+  @Column({name: 'comment_author', type: 'varchar'})
   commentAuthor: string;
+
+  @Column({name: 'comment_email', type: 'varchar'})
+  commentEmail: string;
 
   @Column({name: 'comment_date', type: 'date'})
   commentDate: Date;
@@ -19,10 +19,7 @@ export class PostCommentEntity {
   @Column({name: 'comment_content', type: 'text'})
   commentContent: string;
 
-  @Column({name: 'status', type:'boolean', default:true})
-  isActive: boolean;
-
-  @ManyToOne(type => PostEntity, post => post.comments )
+  @ManyToOne(type => PostEntity, post => post.comments)
   @JoinColumn({name: 'post_id'})
   post: PostEntity;
 
