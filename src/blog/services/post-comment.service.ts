@@ -1,8 +1,9 @@
 import { Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { PostCommentEntity } from "../entities/post-comment.entity";
-import { Repository } from "typeorm";
+import { getRepository, Repository } from "typeorm";
 import { CreateCommentDto, UpdateCommentDto } from "../dto/comment.dto";
+import { PostEntity } from "../entities/post.entity";
 
 
 @Injectable()
@@ -12,34 +13,52 @@ export class PostCommentService {
     @InjectRepository(PostCommentEntity) private postsComRepository: Repository<PostCommentEntity>,
   ) {}
 
-  async create(comment: CreateCommentDto): Promise<PostCommentEntity> {
+  async create(postId: number, comment: CreateCommentDto): Promise<PostCommentEntity> {
+    const post: PostEntity = await getRepository(PostEntity).findOne(postId);
+    if (!post) {
+      throw new NotFoundException(`Post with ID=${postId} not found`);
+    }
     return this.postsComRepository.save(comment);
   }
 
-  async findAll(): Promise<PostCommentEntity[]> {
-    return this.postsComRepository.find({relations: ['post']});
+  async findAll(postId: number): Promise<PostCommentEntity[]> {
+    const post: PostEntity = await getRepository(PostEntity).findOne(postId);
+    if (!post) {
+      throw new NotFoundException(`Post with ID=${postId} not found`);
+    }
+    return this.postsComRepository.find({where: {post: post}});
   }
 
-  async findCommentForPost(commentId: number): Promise<PostCommentEntity> {
-    return this.postsComRepository.findOne(commentId);
+  async findCommentForPost(postId: number, commentId: number): Promise<PostCommentEntity> {
+    const post: PostEntity = await getRepository(PostEntity).findOne(postId)
+   if (!post) {
+     throw new NotFoundException(`Post with ID=${postId} not found`);
+   }
+   if (!commentId) {
+     throw new NotFoundException(`Comment with ID=${commentId} not found`);
+   }
+    return this.postsComRepository.findOne(commentId, {where: {post:post}});
   }
 
-  async updateComment(id: number, updateCom: UpdateCommentDto): Promise<PostCommentEntity> {
+  async updateComment(postId: number, id: number, updateCom: UpdateCommentDto): Promise<PostCommentEntity> {
+    const post: PostEntity = await getRepository(PostEntity).findOne(postId);
+    if (!post) {
+      throw new NotFoundException(`Post with ID=${postId} not found`);
+    }
     await this.postsComRepository.update(id, updateCom);
-    const updatedCom = await this.postsComRepository.findOne(id);
+    const updatedCom = await this.postsComRepository.findOne(id, {where: {post: post}});
     if (updatedCom) {
       return updatedCom;
     }
     throw new NotFoundException(id);
   }
 
-  async removeComment(id: number) {
-    const comment = await this.findCommentForPost(id);
+  async removeComment(postId: number, id: number) {
+    const comment = await this.findCommentForPost(postId, id);
 
     if (!comment) {
       throw new NotFoundException(`Comment with ID=${id} not found`);
     }
-
     return this.postsComRepository.remove(comment);
   }
 }

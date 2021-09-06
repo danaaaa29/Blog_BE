@@ -3,32 +3,33 @@ import { PostCommentService } from "../services/post-comment.service";
 import { CreateCommentDto, UpdateCommentDto } from "../dto/comment.dto";
 
 
-@Controller('posts-comment')
+
+@Controller('posts')
 export class PostCommentController {
   constructor(private postsComService: PostCommentService) {}
 
-  @Post()
-  async createComment(@Body() comment: CreateCommentDto) {
-    return await this.postsComService.create(comment);
+  @Post('/:postId/comments')
+  async createComment(@Body() comment: CreateCommentDto, @Param('postId') postId) {
+    return await this.postsComService.create(postId,comment);
   }
 
-  @Get()
-  async findAllComments() {
-    return await this.postsComService.findAll();
+  @Get('/:postId/comments')
+  async findAllComments(@Param('postId') postId) {
+    return await this.postsComService.findAll(postId);
   }
 
-  @Get(':id')
-  async findCommentForPost(@Param('id') commentId: number) {
-    return await this.postsComService.findCommentForPost(commentId);
+  @Get('/:postId/comments/:id')
+  async findCommentForPost(@Param('postId') postId: number,@Param('id') commentId: number) {
+    return await this.postsComService.findCommentForPost(postId, commentId);
   }
 
-  @Put(':id')
-  async updateComment(@Param('id') commentId: number, @Body() updateCom: UpdateCommentDto) {
-    return await this.postsComService.updateComment(commentId,updateCom);
+  @Put('/:postId/comments/:id')
+  async updateComment(@Param('postId') postId: number, @Param('id') commentId: number, @Body() updateCom: UpdateCommentDto) {
+    return await this.postsComService.updateComment(postId, commentId, updateCom);
   }
 
-  @Delete(':id')
-  async deleteComment(@Param('id') commentId: number) {
-    return await this.postsComService.removeComment(commentId);
+  @Delete('/:postId/comments/:id')
+  async deleteComment(@Param('postId') postId: number, @Param('id') commentId: number) {
+    return await this.postsComService.removeComment(postId, commentId);
   }
 }
