@@ -18,6 +18,7 @@ export class PostCommentService {
     if (!post) {
       throw new NotFoundException(`Post with ID=${postId} not found`);
     }
+    comment.post = post;
     return this.postsComRepository.save(comment);
   }
 
